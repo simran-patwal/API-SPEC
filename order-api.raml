@@ -1,0 +1,123 @@
+#%RAML 1.0
+title: order-api
+baseUri: ecommerce
+securitySchemes:
+  basic: !include Security/basicsecurity.raml
+
+securedBy:
+  - basic
+    
+
+types:
+  Order: !include datatypes/order.raml
+
+traits:
+  errors: 
+    responses:
+      400:
+        body:
+          application/json:
+            example:
+              message: Bad Request
+      404:
+        body:
+          application/json:
+            example:
+              message: Resource Not Found
+      500:
+        body:
+          application/json:
+            example:
+              message: Server Error
+
+
+/order:
+  post:
+    description: to submit a new order
+    displayName: Submit
+    is: [errors]
+
+    body:
+      application/json:
+        description: endpoint to add a new order.
+        type: Order[]
+        examples:
+          input: !include example/examples.raml
+      
+    responses:
+      201:
+        description: Successfully submitted the order
+        body:
+          application/json:
+            example:
+              output:{message: Successfully submitted}
+
+
+  /{id}:
+    uriParameters:
+      id:
+        displayName: Order ID
+        description: ID of the specific product
+        required: true
+        type: string
+
+    get:
+      displayName: Get order by ID
+      description: Retrieves an account detail based on unique Account ID
+      is: [errors]
+      
+      responses:
+        200:
+          description: Success
+          body:
+            application/json:
+              type: Order
+              examples:
+                output: !include example/example.raml
+        
+    patch:
+      displayName: Update partial or entire order by product ID
+      description: Endpoint to modify the associated order.
+      is: [errors]
+      body: 
+        application/json:
+          description: The given expected object can contain one field or all fields for the order that need to be modified.
+          type: Order
+          examples:
+            input: !include /example/example.raml
+
+
+      responses: 
+      
+        200:
+          body: 
+            application/json:
+              description: Successfully modified the expected order
+              example: 
+                message: Order Modified
+
+
+    delete:
+      displayName: Delete order by ID
+      description: Endpoint to delete the associated order.
+      is: [errors]
+      body: 
+        application/json:
+          description: The given expected object can contain one field or all fields for the order that need to be modified.
+          type: Order[]
+
+
+      responses: 
+        200:
+          body: 
+            application/json:
+              description: Cancelled the expected order.
+              example: 
+                message: Order Deleted
+
+      
+
+
+
+
+  
